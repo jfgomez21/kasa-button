@@ -1,5 +1,5 @@
 #TODO - catch KeyboadInterupt exception
-#TODO - pass configuration file via commond line argments
+#TODO - specify logging path via main arguments
 
 from pyudev import Context, Monitor, MonitorObserver
 from evdev import InputDevice, ecodes
@@ -14,7 +14,7 @@ import logging
 
 DEVICE_NAME = "Wireless Phone Controller"
 
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", filename="blue-kasa.log", filemode='a')
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", filename="/tmp/blue-kasa.log", filemode='a')
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class DeviceListener:
         self.kasa = kasa
 
         self.lock = threading.Lock()
-        self.condition = threading.Condition(lock)
+        self.condition = threading.Condition(self.lock)
 
         self.current = {ecodes.KEY_PLAYPAUSE : 0}
         self.device = None
@@ -55,6 +55,8 @@ class DeviceListener:
     def start(self):
         with self.condition:
             self.device = self.get_device(DEVICE_NAME)
+
+            logger.info("device found - {0}".format(self.device.path))
 
             self.condition.notify_all()
 

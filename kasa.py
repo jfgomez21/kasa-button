@@ -119,24 +119,3 @@ class Kasa:
                 state = self.__parse_toggle_result(result)
 
         return state
-        
-#devices = get_devices()
-
-#print(get_devices())
-
-#service = Kasa()
-
-#toggle_device("TP-LINK_Smart Plug_7400", ["Sun Room Lights", "Plug 2"])
-#print(service.toggle_device("TP-LINK_Power Strip_57F4", ["Christmas Tree"]))
-
-"""
-class Dummy:
-    pass
-
-with open("dummy.txt") as file:
-    dummy = Dummy()
-    dummy.returncode = 0
-    dummy.stdout = file.read()
-
-    print(service.parse_toggle_result(dummy))
-"""
