@@ -11,6 +11,7 @@ import re
 import evdev
 import json
 import logging
+import time
 
 DEVICE_NAME = "Wireless Phone Controller"
 
@@ -72,11 +73,15 @@ class DeviceListener:
 
                             if event.code == ecodes.KEY_PLAYPAUSE:
                                 if self.current[event.code] == 1 and event.value == 0:
+                                    start = time.time()
+
                                     for group in self.groups:
                                         logger.debug("toggle - {0} {1}".format(group["name"], group["children"]))
 
                                         kasa.toggle_device(group["name"], group["children"])
                                     
+                                    logger.debug("command finished in {:.2f}s".format(time.time() - start))
+
                                 self.current[event.code] = event.value
                 except OSError:
                     pass

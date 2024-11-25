@@ -1,8 +1,10 @@
 import logging
 import subprocess
 import json
+import concurrent.futures
 
 from enum import Enum
+from concurrent.futures import ThreadPoolExecutor
 
 logger = logging.getLogger(__name__) 
 
@@ -12,7 +14,9 @@ class PowerState(Enum):
     UNKNOWN = "UNKNOWN"
 
 class Kasa:
+
     _devices = []
+    _executor = ThreadPoolExecutor(max_workers=4)
 
     def __run_command(self, args):
         logger.info("executing command - {0}".format(" ".join(args)))
@@ -104,9 +108,13 @@ class Kasa:
                 return state
 
         if len(children) > 0:
+            results = []
+
             for child in children:
-                result = self.__run_command(["kasa", "--host", ip, "device", "--child", child, "toggle"])
-                s = self.__parse_toggle_result(result)
+                results.append(self._executor.submit(self.__run_command, ["kasa", "--host", ip, "device", "--child", child, "toggle"]))
+
+            for result in concurrent.futures.as_completed(results):
+                s = self.__parse_toggle_result(result.result())
 
                 if state == PowerState.UNKNOWN:
                     state = s
