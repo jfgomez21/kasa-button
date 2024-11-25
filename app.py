@@ -57,7 +57,8 @@ class DeviceListener:
         with self.condition:
             self.device = self.get_device(DEVICE_NAME)
 
-            logger.info("device found - {0}".format(self.device.path))
+            if self.device is not None:
+                logger.info("device found - {0}".format(self.device.path))
 
             self.condition.notify_all()
 
